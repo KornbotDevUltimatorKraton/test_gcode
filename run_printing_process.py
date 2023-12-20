@@ -1,3 +1,4 @@
+import re
 import time 
 import json 
 import requests 
@@ -10,6 +11,13 @@ current_command = {}
 position_processing = {}  
 total_layer = len(read_linecode)
 print_layer = [] 
+internal_pos = {} # Get the internal position data 
+
+#stringand_number_dector
+def split_string(s):
+           parts = re.findall(r'([a-zA-Z]+|\d+)',s)
+           return parts
+ 
 for gcode in read_linecode:
 
            #print(gcode.split(" "))
@@ -22,15 +30,27 @@ for gcode in read_linecode:
                        pass
                        #print("Comment detected",gcode.split(";"))
            else:
-               print("Command detected",gcode.split(" "))    
+               print("Command detected",gcode.split(" ")) 
                #Running the command header extraction for the G-code and calibrate the position data into the json configuretion 
-               #for gread in gcode.split(" "):
-                          #print(gread[0])
-               current_command["command_head"] = gcode.split(" ")[0]
-               print(current_command)   
-               for gread in gcode.split(" "):
-                          #Check if position parameter inside is not inside the loop then do the intersection and cut key and value out from the dict 
-                          print("running the parameter inside command loop data")
-                          
-                      
-                      
+               #Detect_comment and command 
+               current_command["command"] = gcode.split(" ")[0]
+               #gcode.split(" ").remove(gcode.split(" ")[0]) # Remove the first element of the data in the list 
+               for gread in range(1,len(gcode.split(" "))):
+                           print(gread)   # Get the data of the gread from the current data 
+                           result_split = split_string(gcode.split(" ")[gread])
+                           #Detect the interception between the data 
+                           try:
+                              internal_pos[result_split[0]] = result_split[1] 
+                              print(internal_pos)
+                              
+                              if len(gcode.split(" "))-1 == gread:
+                                          data_post = {current_command["command"]:internal_pos} #Send the data of the position in the realtime  
+                                          print("Position command",data_post) 
+                                          #Post request data here with full command 
+                                          internal_pos.clear()
+                           except:
+                                print("Out of range command running the command separately") 
+                           #internal_pos.clear() # Clear and get the new one to send the post request                            
+               
+                  
+                  
