@@ -18,26 +18,26 @@ def split_string(s):
            parts = re.findall(r'([a-zA-Z]+|\d+)',s)
            return parts
  
-for gcode in read_linecode:
-
+#for gcode in read_linecode:
+for gcode in range(0,len(read_linecode)):
            #print(gcode.split(" "))
-           print_layer.append(gcode.split(" "))
+           print_layer.append(read_linecode[gcode].split(" "))
            percentage = (len(print_layer)/total_layer)*100          
            #res_print = requests.post("http://192.168.50.139:8000/gauge_value",json={"percentage":percentage})  
            #Check the data type of command and comment 
-           if  len(gcode.split(";")) == 2:
-                   if gcode.split(";")[0] == '':    
+           if  len(read_linecode[gcode].split(";")) == 2:
+                   if read_linecode[gcode].split(";")[0] == '':    
                        pass
                        #print("Comment detected",gcode.split(";"))
            else:
-               print("Command detected",gcode.split(" ")) 
+               print("Command detected",read_linecode[gcode].split(" ")) 
                #Running the command header extraction for the G-code and calibrate the position data into the json configuretion 
                #Detect_comment and command 
-               current_command["command"] = gcode.split(" ")[0]
+               current_command["command"] = read_linecode[gcode].split(" ")[0]
                #gcode.split(" ").remove(gcode.split(" ")[0]) # Remove the first element of the data in the list 
-               for gread in range(1,len(gcode.split(" "))):
+               for gread in range(1,len(read_linecode[gcode].split(" "))):
                            print(gread)   # Get the data of the gread from the current data 
-                           result_split = split_string(gcode.split(" ")[gread])
+                           result_split = split_string(read_linecode[gcode].split(" ")[gread])
                            #Detect the interception between the data 
                            try:
                               internal_pos[result_split[0]] = result_split[1] 
